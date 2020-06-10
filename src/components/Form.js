@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import * as yup from "yup";
 import axios from "axios";
-import {Form, Input, TextArea, Button, Label} from "semantic-ui-react";
+import {Form, TextArea, Button, Label} from "semantic-ui-react";
 
 const UserForm = () => {
   const [user, setUser] = useState([]);
@@ -149,7 +149,7 @@ const UserForm = () => {
           onChange={formInputChange}
           value={formData.role}
         >
-          <option value="">--Select Role--</option>
+          <option>--Select Role--</option>
           <option value="frontend">Frontend</option>
           <option value="backend">Backend</option>
           <option value="ux">UX Designer</option>
