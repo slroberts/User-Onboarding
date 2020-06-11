@@ -1,7 +1,21 @@
 import React, {useState, useEffect} from "react";
 import * as yup from "yup";
 import axios from "axios";
-import {Form, TextArea, Button, Label} from "semantic-ui-react";
+import {Form, Button, Label, Checkbox} from "semantic-ui-react";
+
+const formSchema = yup.object().shape({
+  name: yup.string().required("Name is a required field"),
+  email: yup
+    .string()
+    .email("Must be a valid email address")
+    .required("Email is a required field"),
+  password: yup
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .required("Password is a required field"),
+  role: yup.mixed().oneOf(["frontend", "backend", "ux", "pm"]),
+  terms: yup.boolean().oneOf([true], "Please agree to terms of use"),
+});
 
 const UserForm = () => {
   const [user, setUser] = useState([]);
@@ -13,7 +27,7 @@ const UserForm = () => {
     email: "",
     password: "",
     role: "",
-    terms: true,
+    terms: "",
   });
 
   const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -26,31 +40,17 @@ const UserForm = () => {
     terms: "",
   });
 
-  const formSchema = yup.object().shape({
-    name: yup.string().required("Name is a required field"),
-    email: yup
-      .string()
-      .email("Must be a valid email address")
-      .required("Email is a required field"),
-    password: yup
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .required("Password is a required field"),
-    role: yup.mixed().oneOf(["frontend", "backend", "ux", "pm"]),
-    terms: yup.boolean().oneOf([true]),
-  });
-
   useEffect(() => {
-    formSchema.isValid(formData).then((isFormValid) => {
-      setButtonDisabled(!isFormValid);
+    formSchema.isValid(formData).then((valid) => {
+      setButtonDisabled(!valid);
     });
-  }, [formData, formSchema]);
+  }, [formData]);
 
   const validateChange = (event) => {
     yup
       .reach(formSchema, event.target.name)
       .validate(event.target.value)
-      .then((inputIsValid) => {
+      .then((valid) => {
         setErrors({
           ...errors,
           [event.target.name]: "",
@@ -68,7 +68,10 @@ const UserForm = () => {
     event.persist();
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value,
+      [event.target.name]:
+        event.target.type === "checkbox"
+          ? event.target.checked
+          : event.target.value,
     });
     validateChange(event);
   };
@@ -85,7 +88,7 @@ const UserForm = () => {
           email: "",
           password: "",
           role: "",
-          terms: true,
+          terms: "",
         });
         setServerError(null);
       })
@@ -102,6 +105,7 @@ const UserForm = () => {
           id="name"
           placeholder="John/Jane Doe"
           name="name"
+          data-cy="name"
           onChange={formInputChange}
           value={formData.name}
         />
@@ -117,6 +121,7 @@ const UserForm = () => {
           id="email"
           placeholder="name@company.com"
           name="email"
+          data-cy="email"
           onChange={formInputChange}
           value={formData.email}
         />
@@ -132,6 +137,7 @@ const UserForm = () => {
           id="password"
           type="password"
           name="password"
+          data-cy="password"
           onChange={formInputChange}
           value={formData.password}
         />
@@ -146,6 +152,7 @@ const UserForm = () => {
         <select
           id="role"
           name="role"
+          data-cy="role"
           onChange={formInputChange}
           value={formData.role}
         >
@@ -157,16 +164,18 @@ const UserForm = () => {
         </select>
       </Form.Field>
 
-      <Form.Field
-        label="Terms of Service"
-        id="terms"
-        control="input"
-        type="checkbox"
-        name="terms"
-        onChange={formInputChange}
-        checked={formData.terms}
-      />
-      {errors.terms.length > 0 ? <p>{errors.terms}</p> : null}
+      <Form.Field>
+        <Checkbox
+          label="Terms of Service"
+          id="terms"
+          control="input"
+          name="terms"
+          data-cy="terms"
+          onChange={formInputChange}
+          checked={formData.terms}
+        />
+        {/* {errors.terms.length > 0 ? <p>{errors.terms}</p> : null} */}
+      </Form.Field>
 
       <Button id="button" disabled={buttonDisabled} color="blue">
         Submit
