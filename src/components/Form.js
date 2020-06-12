@@ -1,23 +1,20 @@
 import React, {useState, useEffect} from "react";
-import * as yup from "yup";
+import * as Yup from "yup";
 import axios from "axios";
 import {Form, Button, Label, Checkbox} from "semantic-ui-react";
 
-const formSchema = yup.object().shape({
-  name: yup
-    .string()
+const formSchema = Yup.object().shape({
+  name: Yup.string()
     .min(2, "Name should be a minimun or two letters")
     .required("Name is a required field"),
-  email: yup
-    .string()
+  email: Yup.string()
     .email("Must be a valid email address")
     .required("Email is a required field"),
-  password: yup
-    .string()
+  password: Yup.string()
     .min(8, "Password must be at least 8 characters")
     .required("Password is a required field"),
-  role: yup.mixed().oneOf(["frontend", "backend", "ux", "pm"]),
-  terms: yup.boolean().oneOf([true], "Please agree to terms of use"),
+  role: Yup.mixed().oneOf(["frontend", "backend", "ux", "pm"]),
+  terms: Yup.boolean().oneOf([true], "Please agree to terms of use"),
 });
 
 const UserForm = () => {
@@ -50,8 +47,7 @@ const UserForm = () => {
   }, [formData]);
 
   const validateChange = (event) => {
-    yup
-      .reach(formSchema, event.target.name)
+    Yup.reach(formSchema, event.target.name)
       .validate(event.target.value)
       .then((valid) => {
         setErrors({
@@ -84,7 +80,7 @@ const UserForm = () => {
     axios
       .post("https://reqres.in/api/users", formData)
       .then((res) => {
-        setUser(res.data);
+        setUser([...user, res.data]);
 
         setFormData({
           name: "",
