@@ -4,7 +4,10 @@ import axios from "axios";
 import {Form, Button, Label, Checkbox} from "semantic-ui-react";
 
 const formSchema = yup.object().shape({
-  name: yup.string().required("Name is a required field"),
+  name: yup
+    .string()
+    .min(2, "Name should be a minimun or two letters")
+    .required("Name is a required field"),
   email: yup
     .string()
     .email("Must be a valid email address")
@@ -177,7 +180,12 @@ const UserForm = () => {
         {/* {errors.terms.length > 0 ? <p>{errors.terms}</p> : null} */}
       </Form.Field>
 
-      <Button id="button" disabled={buttonDisabled} color="blue">
+      <Button
+        id="button"
+        data-cy="submit"
+        disabled={buttonDisabled}
+        color="blue"
+      >
         Submit
       </Button>
       <p>{JSON.stringify(user, null, 2)}</p>
