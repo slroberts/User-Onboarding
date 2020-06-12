@@ -21,4 +21,12 @@ describe("Form - testing User Onboarding form inputs", function () {
     cy.get("#terms").check({force: true}).should("be.checked");
     cy.get('[data-cy="submit"]').click();
   });
+
+  it("Clear inputs and check for errors show errors ", function () {
+    cy.get('[data-cy="name"]').type("Shomari Roberts").clear();
+    cy.pause();
+    cy.get('[data-cy="email"]').type("test@gmail.com").clear();
+    cy.get('[data-cy="password"]').type("45").clear();
+    cy.get("#terms").uncheck();
+  });
 });
